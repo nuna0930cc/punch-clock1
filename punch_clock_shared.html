@@ -1,0 +1,618 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:var(--color-background-tertiary);
+  --s1:var(--color-background-secondary);
+  --s2:var(--color-background-primary);
+  --border:var(--color-border-tertiary);
+  --text:var(--color-text-primary);
+  --dim:var(--color-text-secondary);
+  --hint:var(--color-text-tertiary);
+  --accent:#7c6aff;
+  --green:#22c55e;
+  --red:#ef4444;
+  --yellow:#f59e0b;
+  --blue:#3b82f6;
+}
+body{font-family:var(--font-sans)}
+
+.app{display:flex;flex-direction:column;min-height:500px;font-family:var(--font-sans);max-width:420px;margin:0 auto}
+
+/* Identity picker */
+.who-screen{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px 20px;gap:20px;min-height:480px;
+}
+.who-title{font-size:18px;font-weight:500;color:var(--text);text-align:center}
+.who-sub{font-size:13px;color:var(--dim);text-align:center;line-height:1.6}
+.who-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:280px}
+.who-card{
+  background:var(--s2);border:0.5px solid var(--color-border-secondary);
+  border-radius:var(--border-radius-lg);padding:20px 12px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;
+  transition:all .15s;
+}
+.who-card:hover{border-color:var(--accent);background:var(--s1)}
+.who-card.selected{border:2px solid var(--accent);background:var(--s1)}
+.who-avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:500}
+.who-name{font-size:14px;font-weight:500;color:var(--text)}
+.who-role{font-size:11px;color:var(--dim)}
+.confirm-btn{
+  width:100%;max-width:280px;height:48px;border-radius:var(--border-radius-lg);
+  border:none;background:var(--accent);color:#fff;
+  font-size:15px;font-weight:500;cursor:pointer;transition:opacity .15s;
+  font-family:var(--font-sans);
+}
+.confirm-btn:hover{opacity:.9}
+.confirm-btn:disabled{opacity:.4;cursor:default}
+
+/* Header */
+.hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;border-bottom:0.5px solid var(--border);
+  background:var(--s2);
+}
+.hdr-left{display:flex;align-items:center;gap:8px}
+.hdr-who{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:500;
+}
+.hdr-name{font-size:14px;font-weight:500;color:var(--text)}
+.hdr-right{display:flex;gap:6px}
+.hbtn{
+  height:28px;padding:0 10px;border-radius:var(--border-radius-md);
+  border:0.5px solid var(--color-border-secondary);background:transparent;
+  color:var(--dim);font-size:12px;cursor:pointer;font-family:var(--font-sans);
+  display:flex;align-items:center;gap:4px;transition:background .12s;
+  white-space:nowrap;
+}
+.hbtn:hover{background:var(--s1)}
+.hbtn i{font-size:14px}
+
+/* Tabs */
+.tabs{display:flex;border-bottom:0.5px solid var(--border);background:var(--s2)}
+.tab{
+  flex:1;height:38px;display:flex;align-items:center;justify-content:center;
+  gap:5px;font-size:13px;color:var(--dim);cursor:pointer;
+  border-bottom:2px solid transparent;transition:all .15s;
+}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab i{font-size:15px}
+
+/* Clock */
+.clock-wrap{padding:20px 16px 12px;text-align:center;background:var(--s1);border-bottom:0.5px solid var(--border)}
+.live-time{font-family:var(--font-mono);font-size:42px;font-weight:500;color:var(--text);letter-spacing:.04em;line-height:1}
+.live-date{font-size:12px;color:var(--dim);margin-top:4px;font-family:var(--font-mono)}
+
+/* Status */
+.status-card{
+  margin:12px 16px;background:var(--s2);
+  border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);
+  padding:12px 14px;display:flex;align-items:center;gap:10px;
+}
+.s-dot{width:8px;height:8px;border-radius:50%;background:var(--color-border-secondary);flex-shrink:0;transition:all .3s}
+.s-dot.in{background:var(--green)}
+.s-info{flex:1;min-width:0}
+.s-lbl{font-size:11px;color:var(--dim);margin-bottom:2px}
+.s-val{font-family:var(--font-mono);font-size:15px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.elapsed-pill{
+  font-family:var(--font-mono);font-size:11px;padding:3px 8px;border-radius:20px;
+  background:var(--color-background-success);color:var(--color-text-success);
+  border:0.5px solid var(--color-border-success);flex-shrink:0;
+}
+
+/* Punch btns */
+.punch-area{padding:0 16px 12px;display:flex;flex-direction:column;gap:8px}
+.pbtn{
+  width:100%;height:60px;border-radius:var(--border-radius-lg);border:none;
+  font-size:16px;font-weight:500;cursor:pointer;
+  font-family:var(--font-sans);transition:opacity .12s;letter-spacing:.03em;
+}
+.pbtn:active{opacity:.85}
+.pbtn-in{background:#22c55e;color:#fff}
+.pbtn-out{background:#ef4444;color:#fff}
+
+/* Note + manual */
+.extras{padding:0 16px 16px;display:flex;flex-direction:column;gap:8px}
+.finput{
+  width:100%;height:38px;background:var(--s2);
+  border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);
+  color:var(--text);font-size:13px;padding:0 10px;outline:none;font-family:var(--font-sans);
+}
+.finput::placeholder{color:var(--hint)}
+.finput:focus{border-color:var(--accent)}
+.finput.mono{font-family:var(--font-mono);text-align:center}
+.row2{display:flex;gap:8px;align-items:flex-start}
+.fcol{display:flex;flex-direction:column;gap:3px;flex:1}
+.flbl{font-size:10px;color:var(--hint);text-align:center}
+.mini-btn{
+  height:38px;padding:0 12px;background:var(--s2);
+  border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);
+  color:var(--text);font-size:13px;cursor:pointer;font-family:var(--font-sans);
+  white-space:nowrap;transition:background .12s;
+}
+.mini-btn:hover{background:var(--s1)}
+.hint-txt{font-size:11px;color:var(--hint);text-align:center}
+
+/* Records page */
+.rec-hdr{
+  padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:0.5px solid var(--border);background:var(--s2);
+}
+.rec-hdr-title{font-size:14px;font-weight:500;color:var(--text)}
+.month-nav{display:flex;align-items:center;gap:8px}
+.mnav-btn{
+  width:24px;height:24px;border-radius:var(--border-radius-md);
+  border:0.5px solid var(--color-border-secondary);background:transparent;
+  color:var(--dim);font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.mnav-btn:hover{background:var(--s1)}
+.mnav-disp{font-family:var(--font-mono);font-size:12px;font-weight:500;min-width:60px;text-align:center;color:var(--text)}
+
+/* Filter */
+.filter-bar{display:flex;gap:6px;padding:10px 16px 6px;background:var(--s1);border-bottom:0.5px solid var(--border)}
+.fpill{
+  height:26px;padding:0 10px;border-radius:20px;font-size:12px;
+  border:0.5px solid var(--color-border-secondary);background:var(--s2);
+  color:var(--dim);cursor:pointer;font-family:var(--font-sans);transition:all .12s;
+}
+.fpill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.rec-list{padding:10px 16px 120px;display:flex;flex-direction:column;gap:6px}
+.rec-card{
+  background:var(--s2);border:0.5px solid var(--color-border-tertiary);
+  border-radius:var(--border-radius-lg);padding:10px 12px;
+  display:flex;align-items:center;gap:10px;
+}
+.rwho{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.rdate{min-width:32px;text-align:center;flex-shrink:0}
+.rwd{font-size:9px;color:var(--hint);font-family:var(--font-mono)}
+.rd{font-size:18px;font-weight:500;font-family:var(--font-mono);line-height:1;color:var(--text)}
+.rbody{flex:1;min-width:0}
+.rtimes{font-family:var(--font-mono);font-size:12px;color:var(--text);display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.rarr{color:var(--hint);font-size:10px}
+.chips{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.chip{font-size:10px;padding:1px 6px;border-radius:20px;font-family:var(--font-mono)}
+.ch-h{background:var(--color-background-info);color:var(--color-text-info)}
+.ch-ot{background:var(--color-background-danger);color:var(--color-text-danger)}
+.ch-cp{background:var(--color-background-warning);color:var(--color-text-warning)}
+.ch-n{background:var(--s1);color:var(--dim);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rdel{
+  width:26px;height:26px;border-radius:var(--border-radius-md);
+  border:0.5px solid var(--color-border-tertiary);background:transparent;
+  color:var(--hint);font-size:12px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.rdel:hover{border-color:var(--color-border-danger);color:var(--color-text-danger)}
+
+/* Summary bar */
+.sum-bar{
+  border-top:0.5px solid var(--border);background:var(--s2);
+  padding:10px 16px;display:flex;justify-content:space-around;
+}
+.sitem{text-align:center}
+.sval{font-family:var(--font-mono);font-size:15px;font-weight:500;color:var(--text)}
+.skey{font-size:9px;color:var(--hint);margin-top:1px;letter-spacing:.04em}
+.v-ot{color:#ef4444}
+.v-cp{color:#f59e0b}
+.v-ok{color:#22c55e}
+
+/* Toast */
+.toast-wrap{
+  position:sticky;bottom:0;pointer-events:none;
+  display:flex;justify-content:center;padding-bottom:8px;
+}
+.toast{
+  background:var(--color-background-tertiary);color:var(--text);
+  border:0.5px solid var(--border);
+  padding:8px 16px;border-radius:var(--border-radius-lg);font-size:12px;
+  font-family:var(--font-mono);opacity:0;transition:opacity .2s;
+  pointer-events:none;white-space:nowrap;
+}
+.toast.show{opacity:1}
+
+.empty{text-align:center;padding:40px 20px;color:var(--hint);font-size:13px;line-height:1.8}
+.page{display:none;flex-direction:column}
+.page.active{display:flex}
+</style>
+
+<h2 class="sr-only">打卡紀錄系統 — 雙人共用打卡與查詢介面</h2>
+<div class="app" id="app">
+
+<!-- Identity picker -->
+<div class="who-screen" id="whoScreen">
+  <div>
+    <div class="who-title">你是誰？</div>
+    <div class="who-sub" style="margin-top:6px">選擇你的身份，資料會分別記錄</div>
+  </div>
+  <div class="who-cards">
+    <div class="who-card" id="wc0" onclick="pickWho(0)">
+      <div class="who-avatar" style="background:#ede9fe;color:#7c3aed">我</div>
+      <div class="who-name">我</div>
+      <div class="who-role" id="myName" style="font-size:10px;color:var(--hint)">點此設定名字</div>
+    </div>
+    <div class="who-card" id="wc1" onclick="pickWho(1)">
+      <div class="who-avatar" style="background:#dcfce7;color:#16a34a">乓</div>
+      <div class="who-name">乓乓</div>
+      <div class="who-role" style="font-size:10px;color:var(--hint)">同事</div>
+    </div>
+  </div>
+  <button class="confirm-btn" id="confirmBtn" onclick="confirmWho()" disabled>確認並進入 →</button>
+  <div style="font-size:11px;color:var(--hint);text-align:center;line-height:1.7;max-width:260px">
+    資料儲存在此裝置<br>兩人各自用自己的裝置打開這個頁面
+  </div>
+</div>
+
+<!-- Main -->
+<div id="main" style="display:none;flex-direction:column">
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="hdr-who" id="hdrAvatar"></div>
+      <div class="hdr-name" id="hdrName"></div>
+    </div>
+    <div class="hdr-right">
+      <button class="hbtn" onclick="exportExcel()"><i class="ti ti-table-export" aria-hidden="true"></i>匯出</button>
+      <button class="hbtn" onclick="switchWho()"><i class="ti ti-switch-horizontal" aria-hidden="true"></i>切換</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" id="tab0" onclick="setTab(0)"><i class="ti ti-clock" aria-hidden="true"></i>打卡</div>
+    <div class="tab" id="tab1" onclick="setTab(1)"><i class="ti ti-list" aria-hidden="true"></i>紀錄</div>
+  </div>
+
+  <!-- Clock page -->
+  <div class="page active" id="page0">
+    <div class="clock-wrap">
+      <div class="live-time" id="liveTime">00:00:00</div>
+      <div class="live-date" id="liveDate"></div>
+    </div>
+
+    <div class="status-card">
+      <div class="s-dot" id="sDot"></div>
+      <div class="s-info">
+        <div class="s-lbl" id="sLbl">尚未上班</div>
+        <div class="s-val" id="sVal">點下方按鈕打卡</div>
+      </div>
+      <div class="elapsed-pill" id="ePill" style="display:none">00:00</div>
+    </div>
+
+    <div class="punch-area">
+      <button class="pbtn pbtn-in" id="btnIn" onclick="punchIn()"><i class="ti ti-player-play" aria-hidden="true"></i> 上班打卡</button>
+      <button class="pbtn pbtn-out" id="btnOut" onclick="punchOut()" style="display:none"><i class="ti ti-player-stop" aria-hidden="true"></i> 下班打卡</button>
+    </div>
+
+    <div class="extras">
+      <input class="finput" id="noteInput" type="text" placeholder="備註（遠端、外出…）" maxlength="30">
+      <div class="hint-txt">或手動輸入</div>
+      <div class="row2">
+        <div class="fcol">
+          <input class="finput mono" type="time" id="mIn">
+          <div class="flbl">上班時間</div>
+        </div>
+        <div class="fcol">
+          <input class="finput mono" type="time" id="mOut">
+          <div class="flbl">下班時間</div>
+        </div>
+        <button class="mini-btn" onclick="addManual()">新增</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Records page -->
+  <div class="page" id="page1">
+    <div class="rec-hdr">
+      <div class="rec-hdr-title">打卡紀錄</div>
+      <div class="month-nav">
+        <button class="mnav-btn" onclick="changeMonth(-1)">‹</button>
+        <div class="mnav-disp" id="monthDisp"></div>
+        <button class="mnav-btn" onclick="changeMonth(1)">›</button>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <button class="fpill active" id="f-all" onclick="setFilter('all')">全部</button>
+      <button class="fpill" id="f-me" onclick="setFilter('me')">我</button>
+      <button class="fpill" id="f-pang" onclick="setFilter('pang')">乓乓</button>
+    </div>
+    <div class="rec-list" id="recList"></div>
+
+    <div class="sum-bar">
+      <div class="sitem"><div class="sval" id="sD">0</div><div class="skey">出勤天</div></div>
+      <div class="sitem"><div class="sval v-ot" id="sO">0h</div><div class="skey">累積加班</div></div>
+      <div class="sitem"><div class="sval v-cp" id="sC">0h</div><div class="skey">累積補休</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap"><div class="toast" id="toast"></div></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const WORK_H = 8;
+const WD = ['日','一','二','三','四','五','六'];
+const p = n => String(n).padStart(2,'0');
+const toHM = m => { const h=Math.floor(m/60),mm=Math.round(m%60); return mm?`${h}h${p(mm)}m`:`${h}h`; };
+const mins = (a,b) => (new Date(b)-new Date(a))/60000;
+const todayKey = () => { const d=new Date(); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`; };
+const parseKey = k => { const [y,m,d]=k.split('-'); return new Date(+y,+m-1,+d); };
+const fmtHM = d => `${p(d.getHours())}:${p(d.getMinutes())}`;
+
+const USERS = [
+  {key:'me',   name:'我',   short:'我', color:'#7c3aed', bg:'#ede9fe'},
+  {key:'pang', name:'乓乓', short:'乓', color:'#16a34a', bg:'#dcfce7'},
+];
+
+let activeWho = null;
+let pickedWho = null;
+let records = JSON.parse(localStorage.getItem('punch_v3') || '[]');
+let clockInTime = null;
+let elapsedIv = null;
+let viewYear = new Date().getFullYear();
+let viewMonth = new Date().getMonth();
+let recFilter = 'all';
+
+function save() { localStorage.setItem('punch_v3', JSON.stringify(records)); }
+
+// ── Who screen ──
+function pickWho(idx) {
+  pickedWho = idx;
+  document.getElementById('wc0').classList.toggle('selected', idx===0);
+  document.getElementById('wc1').classList.toggle('selected', idx===1);
+  document.getElementById('confirmBtn').disabled = false;
+}
+function confirmWho() {
+  if (pickedWho === null) return;
+  activeWho = pickedWho;
+  localStorage.setItem('punch_who', String(activeWho));
+  document.getElementById('whoScreen').style.display = 'none';
+  document.getElementById('main').style.display = 'flex';
+  document.getElementById('main').style.flexDirection = 'column';
+  initMain();
+}
+function switchWho() {
+  document.getElementById('whoScreen').style.display = 'flex';
+  document.getElementById('main').style.display = 'none';
+  document.getElementById('wc0').classList.remove('selected');
+  document.getElementById('wc1').classList.remove('selected');
+  document.getElementById('confirmBtn').disabled = true;
+  pickedWho = null;
+  clearInterval(elapsedIv); elapsedIv = null;
+}
+
+// ── Main ──
+function initMain() {
+  const u = USERS[activeWho];
+  const av = document.getElementById('hdrAvatar');
+  av.textContent = u.short;
+  av.style.background = u.bg;
+  av.style.color = u.color;
+  document.getElementById('hdrName').textContent = u.name;
+  updateClock();
+  checkState();
+  renderRecords();
+}
+
+// ── Clock ──
+function updateClock() {
+  const now = new Date();
+  document.getElementById('liveTime').textContent = `${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`;
+  document.getElementById('liveDate').textContent = `${now.getFullYear()}/${p(now.getMonth()+1)}/${p(now.getDate())} 週${WD[now.getDay()]}`;
+}
+setInterval(updateClock, 1000);
+
+function updateElapsed() {
+  if (!clockInTime) return;
+  const diff = Math.floor((Date.now()-clockInTime)/1000);
+  const h=Math.floor(diff/3600), m=Math.floor((diff%3600)/60);
+  document.getElementById('ePill').textContent = `${p(h)}:${p(m)}`;
+}
+
+// ── State ──
+function checkState() {
+  const tk = todayKey();
+  const uk = USERS[activeWho].key;
+  const rec = records.find(r => r.date===tk && r.userKey===uk);
+  if (rec && rec.inTime && !rec.outTime) {
+    clockInTime = new Date(rec.inTime).getTime();
+    showIn(rec.inTime);
+  } else { showIdle(); }
+}
+function showIdle() {
+  document.getElementById('sDot').className='s-dot';
+  document.getElementById('sLbl').textContent='尚未上班';
+  document.getElementById('sVal').textContent='點下方按鈕打卡';
+  document.getElementById('btnIn').style.display='';
+  document.getElementById('btnOut').style.display='none';
+  document.getElementById('ePill').style.display='none';
+  clearInterval(elapsedIv); elapsedIv=null; clockInTime=null;
+}
+function showIn(inT) {
+  document.getElementById('sDot').className='s-dot in';
+  document.getElementById('sLbl').textContent='上班中';
+  document.getElementById('sVal').textContent=`上班：${fmtHM(new Date(inT))}`;
+  document.getElementById('btnIn').style.display='none';
+  document.getElementById('btnOut').style.display='';
+  document.getElementById('ePill').style.display='';
+  updateElapsed();
+  clearInterval(elapsedIv);
+  elapsedIv=setInterval(updateElapsed,30000);
+}
+
+// ── Punch ──
+function punchIn() {
+  const now = new Date();
+  const tk = todayKey();
+  const uk = USERS[activeWho].key;
+  const note = document.getElementById('noteInput').value.trim();
+  if (records.find(r=>r.date===tk&&r.userKey===uk)) { toast('今天已有紀錄'); return; }
+  records.unshift({date:tk,userKey:uk,inTime:now.toISOString(),outTime:null,note});
+  save(); clockInTime=now.getTime(); showIn(now.toISOString()); renderRecords();
+  toast(`▶ 上班 ${fmtHM(now)}`);
+}
+function punchOut() {
+  const now = new Date();
+  const tk = todayKey();
+  const uk = USERS[activeWho].key;
+  const rec = records.find(r=>r.date===tk&&r.userKey===uk);
+  if (!rec||!rec.inTime) { toast('請先上班打卡'); return; }
+  rec.outTime=now.toISOString();
+  save(); clearInterval(elapsedIv); showIdle(); renderRecords();
+  const m=mins(rec.inTime,rec.outTime), diff=m/60-WORK_H;
+  let msg=`■ 下班 ${fmtHM(now)}`;
+  if(diff>0.01) msg+=`  加班 +${toHM(diff*60)}`;
+  else if(diff<-0.01) msg+=`  補休 ${toHM(-diff*60)}`;
+  toast(msg);
+}
+function addManual() {
+  const iv=document.getElementById('mIn').value, ov=document.getElementById('mOut').value;
+  const note=document.getElementById('noteInput').value.trim();
+  if(!iv||!ov){toast('請填寫時間');return;}
+  const uk=USERS[activeWho].key, tk=todayKey();
+  const base=new Date(); base.setHours(0,0,0,0);
+  const [ih,im]=iv.split(':').map(Number), [oh,om]=ov.split(':').map(Number);
+  const inD=new Date(base); inD.setHours(ih,im);
+  const outD=new Date(base); outD.setHours(oh,om);
+  if(outD<=inD){toast('下班須晚於上班');return;}
+  let rec=records.find(r=>r.date===tk&&r.userKey===uk);
+  if(rec){rec.inTime=inD.toISOString();rec.outTime=outD.toISOString();if(note)rec.note=note;}
+  else records.unshift({date:tk,userKey:uk,inTime:inD.toISOString(),outTime:outD.toISOString(),note});
+  save(); checkState(); renderRecords();
+  document.getElementById('mIn').value='';document.getElementById('mOut').value='';
+  toast('✓ 已新增');
+}
+
+// ── Tabs ──
+function setTab(i) {
+  ['tab0','tab1'].forEach((t,j)=>document.getElementById(t).classList.toggle('active',j===i));
+  ['page0','page1'].forEach((p,j)=>{
+    const el=document.getElementById(p);
+    el.classList.toggle('active',j===i);
+    el.style.display=j===i?'flex':'none';
+  });
+  if(i===1){renderRecords();}
+}
+
+// ── Records ──
+function setFilter(f){
+  recFilter=f;
+  ['all','me','pang'].forEach(k=>{
+    document.getElementById('f-'+k).classList.toggle('active',k===f);
+  });
+  renderRecords();
+}
+function changeMonth(d){
+  viewMonth+=d;
+  if(viewMonth<0){viewMonth=11;viewYear--;}
+  if(viewMonth>11){viewMonth=0;viewYear++;}
+  renderRecords();
+}
+function monthRecs(){
+  return records.filter(r=>{
+    const d=parseKey(r.date);
+    if(d.getFullYear()!==viewYear||d.getMonth()!==viewMonth) return false;
+    if(recFilter!=='all'&&r.userKey!==recFilter) return false;
+    return true;
+  });
+}
+function renderRecords(){
+  document.getElementById('monthDisp').textContent=`${viewYear}/${p(viewMonth+1)}`;
+  const mr=monthRecs();
+  const list=document.getElementById('recList');
+  if(!mr.length){list.innerHTML='<div class="empty">本月沒有紀錄</div>';updateSummary([]);return;}
+  list.innerHTML=mr.map(r=>cardHTML(r)).join('');
+  updateSummary(mr);
+}
+function cardHTML(r){
+  const d=parseKey(r.date);
+  const u=USERS.find(u=>u.key===r.userKey)||USERS[0];
+  const inT=r.inTime?fmtHM(new Date(r.inTime)):'--:--';
+  const outT=r.outTime?fmtHM(new Date(r.outTime)):'進行中';
+  let chips='';
+  if(r.inTime&&r.outTime){
+    const m=mins(r.inTime,r.outTime),diff=m/60-WORK_H;
+    chips+=`<span class="chip ch-h">${toHM(m)}</span>`;
+    if(diff>0.01) chips+=`<span class="chip ch-ot">+${toHM(diff*60)}</span>`;
+    else if(diff<-0.01) chips+=`<span class="chip ch-cp">補${toHM(-diff*60)}</span>`;
+  }
+  if(r.note) chips+=`<span class="chip ch-n">${r.note}</span>`;
+  return `<div class="rec-card">
+    <div class="rwho" style="background:${u.bg};color:${u.color}">${u.short}</div>
+    <div class="rdate"><div class="rwd">週${WD[d.getDay()]}</div><div class="rd">${p(d.getDate())}</div></div>
+    <div class="rbody">
+      <div class="rtimes"><span>${inT}</span><span class="rarr">→</span><span>${outT}</span></div>
+      <div class="chips">${chips}</div>
+    </div>
+    <button class="rdel" onclick="delRec('${r.date}','${r.userKey}')" aria-label="刪除"><i class="ti ti-x" aria-hidden="true"></i></button>
+  </div>`;
+}
+function delRec(date,uk){
+  if(!confirm(`確定刪除 ${date} 的紀錄？`)) return;
+  records=records.filter(r=>!(r.date===date&&r.userKey===uk));
+  save(); renderRecords(); toast('已刪除');
+}
+function updateSummary(mr){
+  const complete=mr.filter(r=>r.inTime&&r.outTime);
+  let ot=0,cp=0;
+  complete.forEach(r=>{const d=mins(r.inTime,r.outTime)-WORK_H*60;if(d>0)ot+=d;else cp+=-d;});
+  document.getElementById('sD').textContent=complete.length;
+  document.getElementById('sO').textContent=ot>0?toHM(ot):'0h';
+  document.getElementById('sC').textContent=cp>0?toHM(cp):'0h';
+}
+
+// ── Export ──
+function exportExcel(){
+  if(!window.XLSX){toast('載入中，請稍後');return;}
+  const now=new Date();
+  const yr=viewYear,mo=viewMonth;
+  const mr=[...records].filter(r=>{
+    const d=parseKey(r.date);
+    return d.getFullYear()===yr&&d.getMonth()===mo;
+  }).reverse();
+  if(!mr.length){toast('本月沒有資料');return;}
+  const rows=[['日期','星期','人員','上班','下班','工時(小時)','加班','補休','備註']];
+  mr.forEach(r=>{
+    const d=parseKey(r.date);
+    const u=USERS.find(u=>u.key===r.userKey)||USERS[0];
+    const inT=r.inTime?fmtHM(new Date(r.inTime)):'';
+    const outT=r.outTime?fmtHM(new Date(r.outTime)):'';
+    let wh='',ot='',cp='';
+    if(r.inTime&&r.outTime){
+      const m=mins(r.inTime,r.outTime);
+      wh=+(m/60).toFixed(2);
+      const diff=m/60-WORK_H;
+      if(diff>0.01) ot=+diff.toFixed(2);
+      else if(diff<-0.01) cp=+(-diff).toFixed(2);
+    }
+    rows.push([r.date,'週'+WD[d.getDay()],u.name,inT,outT,wh,ot,cp,r.note||'']);
+  });
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols']=[{wch:12},{wch:6},{wch:6},{wch:8},{wch:8},{wch:10},{wch:8},{wch:8},{wch:14}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,`${yr}年${mo+1}月`);
+  XLSX.writeFile(wb,`打卡紀錄_${yr}${p(mo+1)}.xlsx`);
+  toast('✓ 已匯出 Excel');
+}
+
+// ── Toast ──
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ── Init ──
+const savedWho = localStorage.getItem('punch_who');
+if(savedWho!==null){
+  activeWho=parseInt(savedWho);
+  document.getElementById('whoScreen').style.display='none';
+  document.getElementById('main').style.display='flex';
+  document.getElementById('main').style.flexDirection='column';
+  initMain();
+}
+updateClock();
+setInterval(updateClock,1000);
+</script>
